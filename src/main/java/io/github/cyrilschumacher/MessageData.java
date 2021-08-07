@@ -4,6 +4,8 @@ import io.github.cyrilschumacher.data.DataElement;
 import io.github.cyrilschumacher.data.DataTypeLengthCodec;
 import io.github.cyrilschumacher.data.codec.DataTypeCodec;
 import io.github.cyrilschumacher.data.codec.DataTypeCodecRegistry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -22,6 +24,8 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 class MessageData<T extends Enum<T> & DataElement> {
+
+    private static final Logger LOGGER = LogManager.getLogger(MessageData.class);
 
     private final DataTypeCodecRegistry dataTypeCodecRegistry;
     private final Map<T, byte[]> elements;
@@ -52,6 +56,7 @@ class MessageData<T extends Enum<T> & DataElement> {
 
     private static <T extends Enum<T> & DataElement> MessageData<T> parse(final List<T> dataElements, final ByteBuffer buffer, final Charset charset, final DataTypeCodecRegistry dataTypeCodecRegistry) {
         final Map<T, byte[]> elements = dataElements.stream()
+                .peek(dataElement -> LOGGER.debug("Parse element: {} ({})", dataElement.getField(), dataElement.getDescription()))
                 .map(dataElement -> Map.entry(dataElement, parse(dataElement, buffer)))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (value1, value2) -> value1, LinkedHashMap::new));
 
@@ -156,6 +161,8 @@ class MessageData<T extends Enum<T> & DataElement> {
 
         @SuppressWarnings("unchecked")
         private Map.Entry<T, byte[]> build(final T dataElement, final Object value) {
+            LOGGER.debug("Build element: {} ({})", dataElement.getField(), dataElement.getDescription());
+
             final Class<?> valueType = value.getClass();
             return Optional.of(dataTypeCodecRegistry)
                     .map(registry -> (DataTypeCodec<Object>) registry.forClass(valueType))
