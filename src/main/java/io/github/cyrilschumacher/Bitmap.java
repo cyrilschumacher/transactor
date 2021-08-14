@@ -129,10 +129,12 @@ class Bitmap {
     }
 
     private void assertRange() {
-        final int highestDataField = Collections.max(dataFields);
-        final int expectedRange = (int) Math.ceil((double) highestDataField / (double) MAXIMUM_DATA_ELEMENTS_PER_BITMAP);
-        if (expectedRange > range) {
-            throw new InsufficientRangeException(highestDataField);
+        if (!dataFields.isEmpty()) {
+            final int highestDataField = Collections.max(dataFields);
+            final int expectedRange = (int) Math.ceil((double) highestDataField / (double) MAXIMUM_DATA_ELEMENTS_PER_BITMAP);
+            if (expectedRange > range) {
+                throw new InsufficientRangeException(highestDataField);
+            }
         }
     }
 

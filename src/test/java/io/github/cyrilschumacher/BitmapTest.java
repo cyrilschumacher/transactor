@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
@@ -257,6 +258,23 @@ class BitmapTest {
             MatcherAssert.assertThat(value, equalTo(expectedBitmap));
             MatcherAssert.assertThat(bitmap.getDataFields(), containsInAnyOrder(65));
             MatcherAssert.assertThat(bitmap.getRange(), equalTo(2));
+        }
+
+        @Test
+        @DisplayName("Should build a bitmap without data fields.")
+        void shouldBuildBitmapWithoutDataFields() {
+            // Given
+            var bitmap = Bitmap.builder().build();
+
+            // When
+            var value = bitmap.toByteArray();
+
+            // Then
+            var expectedBitmap = new byte[]{0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
+
+            MatcherAssert.assertThat(value, equalTo(expectedBitmap));
+            MatcherAssert.assertThat(bitmap.getDataFields(), empty());
+            MatcherAssert.assertThat(bitmap.getRange(), equalTo(1));
         }
 
     }

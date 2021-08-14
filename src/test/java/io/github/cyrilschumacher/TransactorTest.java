@@ -14,6 +14,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 
 /**
@@ -62,6 +63,20 @@ class TransactorTest {
             MatcherAssert.assertThat(message, equalTo(expectedData));
         }
 
+        @Test
+        @DisplayName("Should create an empty message.")
+        void shouldCreateEmptyMessage() throws IOException {
+            // Given
+            var transactor = Transactor.<DummyDataElement>builder(0x1100, StandardCharsets.US_ASCII).build();
+
+            // When
+            var message = transactor.toByteArray();
+
+            // Then
+            var expectedData = DatatypeConverter.parseHexBinary("313130300000000000000000");
+            MatcherAssert.assertThat(message, equalTo(expectedData));
+        }
+
     }
 
     @Nested
@@ -104,6 +119,24 @@ class TransactorTest {
             MatcherAssert.assertThat(messageData.get(DummyDataElement.CARD_ACCEPTOR_NAME_LOCATION, String.class), equalTo("Welch & Cie\\Geraldine Lane\\New York\\11590"));
             MatcherAssert.assertThat(messageData.get(DummyDataElement.CURRENCY_CODE, String.class), equalTo("978"));
             MatcherAssert.assertThat(messageData.get(DummyDataElement.PERSONAL_IDENTIFICATION_DATA), equalTo(expectedPersonalIdentificationData));
+
+        }
+
+        @Test
+        @DisplayName("Should parse an empty message")
+        void shouldParseEmptyMessage() {
+            // Given
+            var data = DatatypeConverter.parseHexBinary("313130300000000000000000");
+
+            // When
+            var transactor = Transactor.parse(data, DummyDataElement.class, StandardCharsets.US_ASCII);
+
+            // Then
+            MatcherAssert.assertThat(transactor.getMessageTypeIndicator(), equalTo(0x1100));
+
+            var bitmap = transactor.getBitmap();
+            MatcherAssert.assertThat(bitmap.getDataFields(), empty());
+            MatcherAssert.assertThat(bitmap.getRange(), equalTo(1));
 
         }
 
