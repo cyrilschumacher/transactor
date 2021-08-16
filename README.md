@@ -39,12 +39,12 @@ class can be obtained by calling the `build()` method.
 
 The `Transactor` class provides methods for:
 
-* Get the message type indicator,
-* Get the bitmap,
-* Get the elements
-* And create a binary value representing the ISO 8583 message.
+  * Get the message type indicator,
+  * Get the bitmap,
+  * Get the elements
+  * And create a binary value representing the ISO 8583 message.
 
-## How does it work?
+## How does it work
 
 The classes `Bitmap` and `MessageData` are used as support by the `Transactor` class. The `Bitmap` class has the role
 of building and analyzing a bitmap and the `MessageData` class is in charge of building and analyzing the data elements.
