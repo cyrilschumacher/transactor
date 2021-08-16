@@ -28,11 +28,11 @@ class MessageData<T extends Enum<T> & DataElement> {
     private static final Logger LOGGER = LogManager.getLogger(MessageData.class);
 
     private final DataTypeCodecRegistry dataTypeCodecRegistry;
-    private final Map<T, byte[]> elements;
+    private final Map<T, byte[]> dataElements;
     private final Charset charset;
 
-    private MessageData(final Map<T, byte[]> elements, final Charset charset, final DataTypeCodecRegistry dataTypeCodecRegistry) {
-        this.elements = Collections.unmodifiableMap(elements);
+    private MessageData(final Map<T, byte[]> dataElements, final Charset charset, final DataTypeCodecRegistry dataTypeCodecRegistry) {
+        this.dataElements = Collections.unmodifiableMap(dataElements);
         this.dataTypeCodecRegistry = dataTypeCodecRegistry;
         this.charset = charset;
     }
@@ -80,7 +80,7 @@ class MessageData<T extends Enum<T> & DataElement> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         } else if ((o == null) || (getClass() != o.getClass())) {
@@ -89,17 +89,17 @@ class MessageData<T extends Enum<T> & DataElement> {
 
         final MessageData<?> that = (MessageData<?>) o;
         return Objects.equals(charset, that.charset)
-                && elements.entrySet().stream()
-                .filter(element -> that.elements.containsKey(element.getKey()))
-                .map(element -> new byte[][]{element.getValue(), that.elements.get(element.getKey())})
+                && dataElements.entrySet().stream()
+                .filter(element -> that.dataElements.containsKey(element.getKey()))
+                .map(element -> new byte[][]{element.getValue(), that.dataElements.get(element.getKey())})
                 .allMatch(element -> Arrays.equals(element[0], element[1]));
     }
 
     @Override
     public int hashCode() {
         int result = charset.hashCode();
-        result *= 31 + elements.keySet().hashCode();
-        result *= 31 + elements.values().stream().map(value -> 31 + Arrays.hashCode(value)).collect(Collectors.toList()).hashCode();
+        result *= 31 + dataElements.keySet().hashCode();
+        result *= 31 + dataElements.values().stream().map(value -> 31 + Arrays.hashCode(value)).collect(Collectors.toList()).hashCode();
 
         return result;
     }
@@ -107,14 +107,14 @@ class MessageData<T extends Enum<T> & DataElement> {
     @Override
     public String toString() {
         return "MessageData{" +
-                "elements=" + elements.keySet() +
+                "elements=" + dataElements.keySet() +
                 ", charset=" + charset +
                 '}';
     }
 
     byte[] toByteArray() throws IOException {
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        for (Map.Entry<T, byte[]> element : elements.entrySet()) {
+        for (Map.Entry<T, byte[]> element : dataElements.entrySet()) {
             final T key = element.getKey();
             final byte[] value = element.getValue();
 

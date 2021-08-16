@@ -105,6 +105,16 @@ public class Transactor<T extends Enum<T> & DataElement> {
         return buffer.toByteArray();
     }
 
+    @Override
+    public String toString() {
+        return "Transactor{" +
+                "bitmap=" + bitmap +
+                ", messageData=" + messageData +
+                ", messageTypeIndicator=" + messageTypeIndicator +
+                ", charset=" + charset +
+                '}';
+    }
+
     private byte[] generateMessageTypeIndicator(final int messageTypeIndicator, final Charset charset) {
         final String messageTypeIndicatorString = Integer.toHexString(messageTypeIndicator);
         final byte[] encodedValue = messageTypeIndicatorString.getBytes(charset);
