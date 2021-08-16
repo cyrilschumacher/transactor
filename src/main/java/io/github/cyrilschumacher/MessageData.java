@@ -69,12 +69,12 @@ class MessageData<T extends Enum<T> & DataElement> {
     }
 
     public byte[] get(final T dataElement) {
-        return elements.get(dataElement);
+        return dataElements.get(dataElement);
     }
 
     public <V> V get(final T dataElement, final Class<V> klass) {
         final DataTypeCodec<V> dataTypeCodec = dataTypeCodecRegistry.forClass(klass);
-        final byte[] value = elements.get(dataElement);
+        final byte[] value = dataElements.get(dataElement);
 
         return dataTypeCodec.decode(value, charset);
     }
