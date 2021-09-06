@@ -4,12 +4,21 @@ public interface DataElement {
 
     int getField();
 
-    DataTypeLengthCodec getTypeLength();
-
     String getDescription();
 
     int getMaximumLength();
 
+    SensitiveFlag getSensitiveFlag();
+
     DataType[] getTypes();
+
+    DataTypeLengthCodec getTypeLengthCodec();
+
+    enum SensitiveFlag {
+
+        NON_SENSITIVE,
+        SENSITIVE
+
+    }
 
 }

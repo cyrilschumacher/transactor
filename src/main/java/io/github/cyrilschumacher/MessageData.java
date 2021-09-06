@@ -64,7 +64,7 @@ class MessageData<T extends Enum<T> & DataElement> {
     }
 
     private static <T extends Enum<T> & DataElement> byte[] parse(final T dataElement, final ByteBuffer buffer) {
-        final DataTypeLengthCodec typeLength = dataElement.getTypeLength();
+        final DataTypeLengthCodec typeLength = dataElement.getTypeLengthCodec();
         return typeLength.decode(buffer, dataElement, StandardCharsets.US_ASCII);
     }
 
@@ -118,7 +118,7 @@ class MessageData<T extends Enum<T> & DataElement> {
             final T key = element.getKey();
             final byte[] value = element.getValue();
 
-            final DataTypeLengthCodec dataTypeLengthCodec = key.getTypeLength();
+            final DataTypeLengthCodec dataTypeLengthCodec = key.getTypeLengthCodec();
             final byte[] encodedValue = dataTypeLengthCodec.encode(value, key, charset);
             buffer.write(encodedValue);
         }
