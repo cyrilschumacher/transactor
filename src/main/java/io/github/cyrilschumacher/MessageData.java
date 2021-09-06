@@ -79,6 +79,10 @@ class MessageData<T extends Enum<T> & DataElement> {
         return dataTypeCodec.decode(value, charset);
     }
 
+    public boolean has(final T dataElement) {
+        return dataElements.containsKey(dataElement);
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
