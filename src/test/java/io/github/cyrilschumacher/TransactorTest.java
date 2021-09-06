@@ -14,6 +14,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -22,6 +23,23 @@ import static org.hamcrest.Matchers.equalTo;
  */
 @DisplayName("Unit tests for `Transactor` class.")
 class TransactorTest {
+
+    @Test
+    @DisplayName("Should return a dump.")
+    void shouldReturnDump() {
+        // Given
+        var data = DatatypeConverter.parseHexBinary("313130307230054108E0900031363435353231313933303632343533323730303030343030303030303030303031323430383032313532323231303030313031323130383032313532323231323031305636393939393030303030303130313135323031323435363635343132303038373039393932303730303631393433323134333231343535343930303531353536363232343157656C63682026204369655C476572616C64696E65204C616E655C4E657720596F726B5C3131353930393738A8ECBC46ADEFD38F");
+
+        var transactor = Transactor.parse(data, DummyDataElement.class, StandardCharsets.US_ASCII);
+        var dumpBuilder = new TransactorDumpBuilder<DummyDataElement>();
+
+        // When
+        var dump = transactor.dump(dumpBuilder);
+
+        // Then
+        MatcherAssert.assertThat(dump, containsString("0x1100"));
+        MatcherAssert.assertThat(dump, containsString("72 30 05 41 08 E0 90 00"));
+    }
 
     @Nested
     @DisplayName("When a message is created.")

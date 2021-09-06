@@ -112,6 +112,10 @@ class MessageData<T extends Enum<T> & DataElement> {
                 '}';
     }
 
+    Map<T, byte[]> get() {
+        return dataElements;
+    }
+
     byte[] toByteArray() throws IOException {
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         for (Map.Entry<T, byte[]> element : dataElements.entrySet()) {

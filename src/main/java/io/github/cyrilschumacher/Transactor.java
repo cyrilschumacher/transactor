@@ -76,6 +76,10 @@ public class Transactor<T extends Enum<T> & DataElement> {
         return Integer.parseInt(messageTypeIndicator, HEXADECIMAL_RADIX);
     }
 
+    public String dump(final DumpBuilder<T> dumpBuilder) {
+        return dumpBuilder.withHeader(messageTypeIndicator, bitmap, charset).withBody(messageData, charset).withFooter().build();
+    }
+
     public Bitmap getBitmap() {
         return bitmap;
     }
