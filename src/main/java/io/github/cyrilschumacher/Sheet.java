@@ -1,8 +1,6 @@
 package io.github.cyrilschumacher;
 
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +50,7 @@ class Sheet {
         return row;
     }
 
-    void write(final PrintWriter writer) throws IOException {
+    void write(final PrintWriter writer) {
         for (Row row : rows) {
             row.write(writer);
         }
@@ -109,7 +107,7 @@ class Sheet {
             return this;
         }
 
-        void write(final PrintWriter writer) throws IOException {
+        void write(final PrintWriter writer) {
             final List<String> rows = new ArrayList<>();
 
             for (Map.Entry<Column, String> entry : columns.entrySet()) {

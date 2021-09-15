@@ -36,7 +36,7 @@ public class Transactor<T extends Enum<T> & DataElement> {
     }
 
     public static <T extends Enum<T> & DataElement> Builder<T> builder(final int messageTypeIndicator, final Charset charset, final DataTypeCodecRegistry dataTypeCodecRegistry) {
-        return new Builder<T>(messageTypeIndicator, dataTypeCodecRegistry, charset);
+        return new Builder<>(messageTypeIndicator, dataTypeCodecRegistry, charset);
     }
 
     public static <T extends Enum<T> & DataElement> Transactor<T> parse(final byte[] data, final Class<T> klass, final Charset charset) {

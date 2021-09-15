@@ -1,7 +1,5 @@
 package io.github.cyrilschumacher.data;
 
-import java.nio.charset.Charset;
-
 public enum IsoDataElement implements DataElement {
 
     PRIMARY_ACCOUNT_NUMBER(2, "Primary Account Number", 19, SensitiveFlag.SENSITIVE, IsoDataTypeLengthCodec.VARIABLE, DataType.NUMERIC),
