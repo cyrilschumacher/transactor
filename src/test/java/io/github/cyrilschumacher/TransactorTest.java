@@ -5,8 +5,10 @@ import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -14,7 +16,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -29,16 +30,34 @@ class TransactorTest {
     void shouldReturnDump() {
         // Given
         var data = DatatypeConverter.parseHexBinary("313130307230054108E0900031363435353231313933303632343533323730303030343030303030303030303031323430383032313532323231303030313031323130383032313532323231323031305636393939393030303030303130313135323031323435363635343132303038373039393932303730303631393433323134333231343535343930303531353536363232343157656C63682026204369655C476572616C64696E65204C616E655C4E657720596F726B5C3131353930393738A8ECBC46ADEFD38F");
-
         var transactor = Transactor.parse(data, DummyDataElement.class, StandardCharsets.US_ASCII);
-        var dumpBuilder = new TransactorDumpBuilder<DummyDataElement>();
+
+        var stringWriterMock = Mockito.mock(StringWriter.class);
 
         // When
-        var dump = transactor.dump(dumpBuilder);
+        transactor.dump(stringWriterMock);
 
         // Then
-        MatcherAssert.assertThat(dump, containsString("0x1100"));
-        MatcherAssert.assertThat(dump, containsString("72 30 05 41 08 E0 90 00"));
+        Mockito.verify(stringWriterMock).write("Message Type Indicator  : 0x1100                                                ", 0, 80);
+        Mockito.verify(stringWriterMock).write("Bitmap                  : 72 30 05 41 08 E0 90 00                               ", 0, 80);
+
+        Mockito.verify(stringWriterMock).write("002  Primary Account Number                .. .. .. .. .. .. .. .. .. .. .. .. .", 0, 80);
+        Mockito.verify(stringWriterMock).write("003  Processing Code                       30 30 30 30 34 30                    ", 0, 80);
+        Mockito.verify(stringWriterMock).write("004  Amount                                30 30 30 30 30 30 30 30 30 31 32 34  ", 0, 80);
+        Mockito.verify(stringWriterMock).write("007  Transmission Date and Time            30 38 30 32 31 35 32 32 32 31        ", 0, 80);
+        Mockito.verify(stringWriterMock).write("011  System Trace Audit Number             30 30 30 31 30 31                    ", 0, 80);
+        Mockito.verify(stringWriterMock).write("012  Date and time, Local Transaction      32 31 30 38 30 32 31 35 32 32 32 31  ", 0, 80);
+        Mockito.verify(stringWriterMock).write("012  Date, expiration                      32 30 31 30                          ", 0, 80);
+        Mockito.verify(stringWriterMock).write("022  Point of Service Data Code            56 36 39 39 39 39 30 30 30 30 30 30  ", 0, 80);
+        Mockito.verify(stringWriterMock).write("024  Function Code                         31 30 31                             ", 0, 80);
+        Mockito.verify(stringWriterMock).write("026  Card Acceptor Business Code           31 35 32 30                          ", 0, 80);
+        Mockito.verify(stringWriterMock).write("032  Acquirer Institution Id Code          34 35 36 36 35 34 31 32 30 30 38 37  ", 0, 80);
+        Mockito.verify(stringWriterMock).write("037  Retrieval Reference Number            30 39 39 39 32 30 37 30 30 36 31 39  ", 0, 80);
+        Mockito.verify(stringWriterMock).write("041  Card Acceptor Terminal Identification 34 33 32 31 34 33 32 31              ", 0, 80);
+        Mockito.verify(stringWriterMock).write("042  Card Acceptor ID code                 34 35 35 34 39 30 30 35 31 35 35 36 3", 0, 80);
+        Mockito.verify(stringWriterMock).write("043  Card Acceptor Name/Location           .. .. .. .. .. .. .. .. .. .. .. .. .", 0, 80);
+        Mockito.verify(stringWriterMock).write("049  Currency Code Transaction             39 37 38                             ", 0, 80);
+        Mockito.verify(stringWriterMock).write("052  Personal Identification Data          .. .. .. .. .. .. .. ..              ", 0, 80);
     }
 
     @Nested

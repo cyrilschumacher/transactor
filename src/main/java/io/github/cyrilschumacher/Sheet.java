@@ -1,5 +1,8 @@
 package io.github.cyrilschumacher;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,11 +23,6 @@ class Sheet {
         this.padding = padding;
         this.rows = new ArrayList<>();
         this.columns = new ArrayList<>();
-    }
-
-    String build() {
-        final String separator = System.lineSeparator();
-        return rows.stream().map(Row::build).collect(Collectors.joining(separator));
     }
 
     Column createColumn() {
@@ -48,10 +46,16 @@ class Sheet {
     }
 
     Row createRow() {
-        final Row row = new Row(maxWidth, columns);
+        final Row row = new Row(columns, maxWidth);
         rows.add(row);
 
         return row;
+    }
+
+    void write(final PrintWriter writer) throws IOException {
+        for (Row row : rows) {
+            row.write(writer);
+        }
     }
 
     private void assertColumnWidth(final int width) {
@@ -79,7 +83,7 @@ class Sheet {
         private final Map<Column, String> columns;
         private final int maxWidth;
 
-        Row(final int maxWidth, final List<Column> columns) {
+        Row(final List<Column> columns, final int maxWidth) {
             this.columns = columns.stream().collect(Collectors.toMap(column -> column, Column::getDefaultValue));
             this.maxWidth = maxWidth;
         }
@@ -105,7 +109,7 @@ class Sheet {
             return this;
         }
 
-        String build() {
+        void write(final PrintWriter writer) throws IOException {
             final List<String> rows = new ArrayList<>();
 
             for (Map.Entry<Column, String> entry : columns.entrySet()) {
@@ -131,8 +135,9 @@ class Sheet {
                 }
             }
 
-            final String separator = System.lineSeparator();
-            return String.join(separator, rows);
+            for (String row : rows) {
+                writer.println(row);
+            }
         }
 
     }

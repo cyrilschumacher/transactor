@@ -5,6 +5,7 @@ import io.github.cyrilschumacher.data.codec.DataTypeCodecRegistry;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
@@ -76,8 +77,20 @@ public class Transactor<T extends Enum<T> & DataElement> {
         return Integer.parseInt(messageTypeIndicator, HEXADECIMAL_RADIX);
     }
 
-    public String dump(final DumpBuilder<T> dumpBuilder) {
-        return dumpBuilder.withHeader(messageTypeIndicator, bitmap, charset).withBody(messageData, charset).withFooter().build();
+    public void dump(final Writer writer) {
+        final DumpWriter<T> dumpWriter = new TransactorDumpWriter<>(writer);
+        dump(dumpWriter);
+    }
+
+    public void dump(final DumpWriter<T> dumpWriter) {
+        try {
+            dumpWriter.printHeader();
+            dumpWriter.printMessageHeader(messageTypeIndicator, bitmap, charset);
+            dumpWriter.printDataElements(messageData, charset);
+            dumpWriter.printFooter();
+        } catch (IOException e) {
+            throw new IllegalStateException("An error occurred during the dump generation.", e);
+        }
     }
 
     public Bitmap getBitmap() {
