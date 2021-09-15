@@ -14,6 +14,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-class MessageData<T extends Enum<T> & DataElement> {
+class MessageData<T extends Enum<T> & DataElement> implements Iterable<MessageData.Element<T>> {
 
     private static final Logger LOGGER = LogManager.getLogger(MessageData.class);
 
@@ -79,10 +80,6 @@ class MessageData<T extends Enum<T> & DataElement> {
         return dataTypeCodec.decode(value, charset);
     }
 
-    public boolean has(final T dataElement) {
-        return dataElements.containsKey(dataElement);
-    }
-
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
@@ -99,6 +96,10 @@ class MessageData<T extends Enum<T> & DataElement> {
                 .allMatch(element -> Arrays.equals(element[0], element[1]));
     }
 
+    public boolean has(final T dataElement) {
+        return dataElements.containsKey(dataElement);
+    }
+
     @Override
     public int hashCode() {
         int result = charset.hashCode();
@@ -108,16 +109,19 @@ class MessageData<T extends Enum<T> & DataElement> {
         return result;
     }
 
+    public Iterator<Element<T>> iterator() {
+        return dataElements.entrySet().stream()
+                .map(Element::fromEntry)
+                .collect(Collectors.toUnmodifiableList())
+                .iterator();
+    }
+
     @Override
     public String toString() {
         return "MessageData{" +
                 "elements=" + dataElements.keySet() +
                 ", charset=" + charset +
                 '}';
-    }
-
-    Map<T, byte[]> get() {
-        return dataElements;
     }
 
     byte[] toByteArray() throws IOException {
@@ -177,6 +181,33 @@ class MessageData<T extends Enum<T> & DataElement> {
                     .map(registry -> registry.encode(value, charset))
                     .map(encodedValue -> Map.entry(dataElement, encodedValue))
                     .orElseThrow(() -> new UnknownTypeException(dataElement, valueType));
+        }
+
+    }
+
+    public static class Element<T> {
+
+        private final T dataElement;
+        private final byte[] value;
+
+        private Element(final T dataElement, final byte[] value) {
+            this.dataElement = dataElement;
+            this.value = value;
+        }
+
+        private static <T> Element<T> fromEntry(final Map.Entry<T, byte[]> entry) {
+            final T key = entry.getKey();
+            final byte[] value = entry.getValue();
+
+            return new Element<>(key, value);
+        }
+
+        public T getDataElement() {
+            return dataElement;
+        }
+
+        public byte[] getValue() {
+            return value;
         }
 
     }

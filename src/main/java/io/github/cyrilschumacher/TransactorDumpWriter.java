@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.util.Map;
 
 public class TransactorDumpWriter<T extends Enum<T> & DataElement> implements DumpWriter<T> {
 
@@ -82,10 +81,9 @@ public class TransactorDumpWriter<T extends Enum<T> & DataElement> implements Du
         final Sheet.Column descriptionColumn = dataElementsSheet.createColumn((int) ((width / 100F) * 47F));
         final Sheet.Column valueColumn = dataElementsSheet.createColumn((int) ((width / 100F) * 45F));
 
-        final Map<T, byte[]> dataElements = messageData.get();
-        for (Map.Entry<T, byte[]> entry : dataElements.entrySet()) {
-            T dataElement = entry.getKey();
-            byte[] value = entry.getValue();
+        for (MessageData.Element<T> element : messageData) {
+            T dataElement = element.getDataElement();
+            byte[] value = element.getValue();
 
             final int field = dataElement.getField();
 
