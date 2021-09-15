@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-class Bitmap {
+public class Bitmap {
 
     private static final int BITMAP_LENGTH = 16;
     private static final int HEXADECIMAL_RADIX = 16;
@@ -121,7 +121,7 @@ class Bitmap {
                 '}';
     }
 
-    byte[] toByteArray() {
+    public byte[] toByteArray() {
         assertRange();
 
         final byte[] bitmap = createBitmap();

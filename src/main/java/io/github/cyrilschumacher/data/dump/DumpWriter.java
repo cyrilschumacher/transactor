@@ -1,5 +1,7 @@
-package io.github.cyrilschumacher;
+package io.github.cyrilschumacher.data.dump;
 
+import io.github.cyrilschumacher.Bitmap;
+import io.github.cyrilschumacher.MessageData;
 import io.github.cyrilschumacher.data.DataElement;
 
 import java.io.IOException;

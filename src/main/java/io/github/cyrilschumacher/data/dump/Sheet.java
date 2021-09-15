@@ -1,4 +1,4 @@
-package io.github.cyrilschumacher;
+package io.github.cyrilschumacher.data.dump;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;

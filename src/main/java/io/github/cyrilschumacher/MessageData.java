@@ -24,7 +24,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-class MessageData<T extends Enum<T> & DataElement> implements Iterable<MessageData.Element<T>> {
+public class MessageData<T extends Enum<T> & DataElement> implements Iterable<MessageData.Element<T>> {
 
     private static final Logger LOGGER = LogManager.getLogger(MessageData.class);
 

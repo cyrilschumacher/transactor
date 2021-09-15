@@ -2,6 +2,8 @@ package io.github.cyrilschumacher;
 
 import io.github.cyrilschumacher.data.DataElement;
 import io.github.cyrilschumacher.data.codec.DataTypeCodecRegistry;
+import io.github.cyrilschumacher.data.dump.DumpWriter;
+import io.github.cyrilschumacher.data.dump.TransactorDumpWriter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
