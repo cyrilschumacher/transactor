@@ -15,6 +15,29 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Builder and parser for ISO 8583 message.
+ * <p>
+ * The class cannot be created directly. Instead, the class provides several static methods to build or parse an
+ * ISO 8583 message. An instance of this class represents an ISO 8583 message and offers the possibility to
+ * get the message in binary format by calling the {@link Transactor#toByteArray()} method or to get various
+ * information about the message (bitmap, elements).
+ *
+ * <ul><li>Build message:</li></ul>
+ * <p>
+ * This class proposes static methods: {@link Transactor#builder(int, Charset)},
+ * {@link Transactor#builder(int, Charset, DataTypeCodecRegistry)} returning an instance of an internal builder of
+ * this class. This builder offers methods for adding elements based on the generic type <code>T</code> of the class.
+ * After adding the elements, an instance of the {@link Transactor} class is returned.
+ *
+ * <ul><li>Parse message:</li></ul>
+ * <p>
+ * This class proposes static methods to parse an ISO 8583 message: {@link Transactor#parse(byte[], Class, Charset)},
+ * {@link Transactor#parse(byte[], Class, Charset, DataTypeCodecRegistry)} returning an instance of the
+ * {@link Transactor} class.
+ *
+ * @param <T> the type of data elements in the message.
+ */
 public class Transactor<T extends Enum<T> & DataElement> {
 
     private static final int BITMAP_LENGTH = 8;
@@ -79,11 +102,21 @@ public class Transactor<T extends Enum<T> & DataElement> {
         return Integer.parseInt(messageTypeIndicator, HEXADECIMAL_RADIX);
     }
 
+    /**
+     * @param writer the writer used to write the dump.
+     * @see #dump(DumpWriter)
+     */
     public void dump(final Writer writer) {
         final DumpWriter<T> dumpWriter = new TransactorDumpWriter<>(writer);
         dump(dumpWriter);
     }
 
+    /**
+     * Create a dump summarizing the message.
+     *
+     * @param dumpWriter the dump writer.
+     * @see DumpWriter
+     */
     public void dump(final DumpWriter<T> dumpWriter) {
         try {
             dumpWriter.printHeader();
@@ -153,10 +186,10 @@ public class Transactor<T extends Enum<T> & DataElement> {
 
         private Builder(final int messageTypeIndicator, final DataTypeCodecRegistry dataTypeCodecRegistry, final Charset charset) {
             this(
-                messageTypeIndicator,
-                Bitmap.builder(),
-                MessageData.<T>builder().withCharset(charset).withDataTypeCodecRegistry(dataTypeCodecRegistry),
-                charset
+                    messageTypeIndicator,
+                    Bitmap.builder(),
+                    MessageData.<T>builder().withCharset(charset).withDataTypeCodecRegistry(dataTypeCodecRegistry),
+                    charset
             );
         }
 
