@@ -29,7 +29,7 @@ class TransactorTest {
     @DisplayName("Should return a dump.")
     void shouldReturnDump() {
         // Given
-        var data = DatatypeConverter.parseHexBinary("313130307230054108E0900031363435353231313933303632343533323730303030343030303030303030303031323430383032313532323231303030313031323130383032313532323231323031305636393939393030303030303130313135323031323435363635343132303038373039393932303730303631393433323134333231343535343930303531353536363232343157656C63682026204369655C476572616C64696E65204C616E655C4E657720596F726B5C3131353930393738A8ECBC46ADEFD38F");
+        var data = DatatypeConverter.parseHexBinary("313130307234054108E0900031363435353231313933303632343533323730303030343030303030303030303031323430383032313532323231303030313031323130383032313532323231323031305636393939393030303030303130313135323031323435363635343132303038373039393932303730303631393433323134333231343535343930303531353536363232343157656C63682026204369655C476572616C64696E65204C616E655C4E657720596F726B5C3131353930393738A8ECBC46ADEFD38F");
         var transactor = Transactor.parse(data, DummyDataElement.class, StandardCharsets.US_ASCII);
 
         var stringWriterMock = Mockito.mock(StringWriter.class);
@@ -39,7 +39,7 @@ class TransactorTest {
 
         // Then
         Mockito.verify(stringWriterMock).write("Message Type Indicator  : 0x1100                                                ", 0, 80);
-        Mockito.verify(stringWriterMock).write("Bitmap                  : 72 30 05 41 08 E0 90 00                               ", 0, 80);
+        Mockito.verify(stringWriterMock).write("Bitmap                  : 72 34 05 41 08 E0 90 00                               ", 0, 80);
 
         Mockito.verify(stringWriterMock).write("002  Primary Account Number                .. .. .. .. .. .. .. .. .. .. .. .. .", 0, 80);
         Mockito.verify(stringWriterMock).write("003  Processing Code                       30 30 30 30 34 30                    ", 0, 80);
@@ -47,7 +47,7 @@ class TransactorTest {
         Mockito.verify(stringWriterMock).write("007  Transmission Date and Time            30 38 30 32 31 35 32 32 32 31        ", 0, 80);
         Mockito.verify(stringWriterMock).write("011  System Trace Audit Number             30 30 30 31 30 31                    ", 0, 80);
         Mockito.verify(stringWriterMock).write("012  Date and time, Local Transaction      32 31 30 38 30 32 31 35 32 32 32 31  ", 0, 80);
-        Mockito.verify(stringWriterMock).write("012  Date, expiration                      32 30 31 30                          ", 0, 80);
+        Mockito.verify(stringWriterMock).write("014  Date, expiration                      32 30 31 30                          ", 0, 80);
         Mockito.verify(stringWriterMock).write("022  Point of Service Data Code            56 36 39 39 39 39 30 30 30 30 30 30  ", 0, 80);
         Mockito.verify(stringWriterMock).write("024  Function Code                         31 30 31                             ", 0, 80);
         Mockito.verify(stringWriterMock).write("026  Card Acceptor Business Code           31 35 32 30                          ", 0, 80);
@@ -96,7 +96,7 @@ class TransactorTest {
             var message = transactor.toByteArray();
 
             // Then
-            var expectedData = DatatypeConverter.parseHexBinary("313130307230054108E0900031363435353231313933303632343533323730303030343030303030303030303031323430383032313532323231303030313031323130383032313532323231323031305636393939393030303030303130313135323031323435363635343132303038373039393932303730303631393433323134333231343535343930303531353536363232343157656C63682026204369655C476572616C64696E65204C616E655C4E657720596F726B5C3131353930393738A8ECBC46ADEFD38F");
+            var expectedData = DatatypeConverter.parseHexBinary("313130307234054108E0900031363435353231313933303632343533323730303030343030303030303030303031323430383032313532323231303030313031323130383032313532323231323031305636393939393030303030303130313135323031323435363635343132303038373039393932303730303631393433323134333231343535343930303531353536363232343157656C63682026204369655C476572616C64696E65204C616E655C4E657720596F726B5C3131353930393738A8ECBC46ADEFD38F");
             MatcherAssert.assertThat(message, equalTo(expectedData));
         }
 
@@ -124,7 +124,7 @@ class TransactorTest {
         @DisplayName("Should parse a message.")
         void shouldParseMessage() {
             // Given
-            var data = DatatypeConverter.parseHexBinary("313130307230054108E0900031363435353231313933303632343533323730303030343030303030303030303031323430383032313532323231303030313031323130383032313532323231323031305636393939393030303030303130313135323031323435363635343132303038373039393932303730303631393433323134333231343535343930303531353536363232343157656C63682026204369655C476572616C64696E65204C616E655C4E657720596F726B5C3131353930393738A8ECBC46ADEFD38F");
+            var data = DatatypeConverter.parseHexBinary("313130307234054108E0900031363435353231313933303632343533323730303030343030303030303030303031323430383032313532323231303030313031323130383032313532323231323031305636393939393030303030303130313135323031323435363635343132303038373039393932303730303631393433323134333231343535343930303531353536363232343157656C63682026204369655C476572616C64696E65204C616E655C4E657720596F726B5C3131353930393738A8ECBC46ADEFD38F");
 
             // When
             var transactor = Transactor.parse(data, DummyDataElement.class, StandardCharsets.US_ASCII);
@@ -135,7 +135,7 @@ class TransactorTest {
             MatcherAssert.assertThat(transactor.getMessageTypeIndicator(), equalTo(0x1100));
 
             var bitmap = transactor.getBitmap();
-            MatcherAssert.assertThat(bitmap.getDataFields(), containsInAnyOrder(2, 3, 4, 7, 11, 12, 22, 24, 26, 32, 37, 41, 42, 43, 49, 52));
+            MatcherAssert.assertThat(bitmap.getDataFields(), containsInAnyOrder(2, 3, 4, 7, 11, 12, 14, 22, 24, 26, 32, 37, 41, 42, 43, 49, 52));
             MatcherAssert.assertThat(bitmap.getRange(), equalTo(1));
 
             var messageData = transactor.getMessageData();

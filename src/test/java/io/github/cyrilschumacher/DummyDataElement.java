@@ -3,10 +3,7 @@ package io.github.cyrilschumacher;
 import io.github.cyrilschumacher.data.DataElement;
 import io.github.cyrilschumacher.data.DataType;
 import io.github.cyrilschumacher.data.DataTypeLengthCodec;
-import io.github.cyrilschumacher.data.IsoDataElement;
 import io.github.cyrilschumacher.data.IsoDataTypeLengthCodec;
-
-import java.nio.charset.Charset;
 
 enum DummyDataElement implements DataElement {
 
@@ -16,7 +13,7 @@ enum DummyDataElement implements DataElement {
     TRANSMISSION_DATE_TIME(7, "Transmission Date and Time", 10, SensitiveFlag.NON_SENSITIVE, IsoDataTypeLengthCodec.FIXED, DataType.NUMERIC),
     SYSTEM_TRACE_AUDIT_NUMBER(11, "System Trace Audit Number", 6, SensitiveFlag.NON_SENSITIVE, IsoDataTypeLengthCodec.FIXED, DataType.NUMERIC),
     DATE_TIME_LOCAL_TRANSACTION(12, "Date and time, Local Transaction", 12, SensitiveFlag.NON_SENSITIVE, IsoDataTypeLengthCodec.FIXED, DataType.NUMERIC),
-    DATE_EXPIRATION(12, "Date, expiration", 4, SensitiveFlag.NON_SENSITIVE, IsoDataTypeLengthCodec.FIXED, DataType.NUMERIC),
+    DATE_EXPIRATION(14, "Date, expiration", 4, SensitiveFlag.NON_SENSITIVE, IsoDataTypeLengthCodec.FIXED, DataType.NUMERIC),
     POINT_OF_SERVICE_DATA_CODE(22, "Point of Service Data Code", 12, SensitiveFlag.NON_SENSITIVE, IsoDataTypeLengthCodec.FIXED, DataType.ALPHA),
     FUNCTION_CODE(24, "Function Code", 3, SensitiveFlag.NON_SENSITIVE, IsoDataTypeLengthCodec.FIXED, DataType.NUMERIC),
     CARD_ACCEPTOR_BUSINESS_CODE(26, "Card Acceptor Business Code", 4, SensitiveFlag.NON_SENSITIVE, IsoDataTypeLengthCodec.FIXED, DataType.NUMERIC),
