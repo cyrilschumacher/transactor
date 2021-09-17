@@ -9,6 +9,23 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 
+/**
+ * Dump writer for {@link io.github.cyrilschumacher.Transactor}.
+ * <p>
+ * This class writes a dump to a given write as a constructor parameter: {@link #writer}.
+ *
+ * <ul>
+ *     <li><b>Header</b>: print an ASCII separator indicating the start of the dump;</li>
+ *     <li><b>Message header</b>: print the message type indicator and the bitmap (in hexadecimal format);</li>
+ *     <li>
+ *         <b>Data elements</b>: print each element with its number, its label and its value (in hexadecimal format)
+ *         if not sensitive (otherwise, the value is hidden by dots);
+ *     </li>
+ *     <li><b>Footer</b>: print a separator indicating the end of the dump;</li>
+ * </ul>
+ *
+ * @param <T> the type of data elements in the message.
+ */
 public class TransactorDumpWriter<T extends Enum<T> & DataElement> implements DumpWriter<T> {
 
     private static final String BORDER = "*";
@@ -18,10 +35,24 @@ public class TransactorDumpWriter<T extends Enum<T> & DataElement> implements Du
     private final int width;
     private final PrintWriter writer;
 
+    /**
+     * Constructor.
+     * <p>
+     * Constructs a dump with lines not exceeding the constant: {@link #DEFAULT_WIDTH}.
+     *
+     * @param writer the writer used to write the dump.
+     * @see #TransactorDumpWriter(Writer, int)
+     */
     public TransactorDumpWriter(final Writer writer) {
         this(writer, DEFAULT_WIDTH);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param writer the writer used to write the dump.
+     * @param width  the total number of characters on each line.
+     */
     public TransactorDumpWriter(final Writer writer, final int width) {
         this.width = width;
         this.writer = new PrintWriter(writer);
