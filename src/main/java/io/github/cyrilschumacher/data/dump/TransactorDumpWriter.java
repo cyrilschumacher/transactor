@@ -168,6 +168,7 @@ public class TransactorDumpWriter<T extends Enum<T> & DataElement> implements Du
         bitmapRow.addColumn(valueColumn, bitmapString);
 
         messageHeaderSheet.write(writer);
+        writer.println();
     }
 
 }
