@@ -103,7 +103,7 @@ public class TransactorDumpWriter<T extends Enum<T> & DataElement> implements Du
     }
 
     @Override
-    public void printDataElements(final MessageData<T> messageData, final Charset charset) throws IOException {
+    public void printDataElements(final MessageData<T> messageData, final Charset charset) {
         final String section = createSection("Data Elements");
         writer.println(section);
         writer.println();

@@ -2,6 +2,7 @@ package io.github.cyrilschumacher.data.dump;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -81,7 +82,7 @@ class Sheet {
         private final Map<Column, String> columns;
         private final int maxWidth;
 
-        Row(final List<Column> columns, final int maxWidth) {
+        protected Row(final List<Column> columns, final int maxWidth) {
             this.columns = columns.stream().collect(Collectors.toMap(column -> column, Column::getDefaultValue));
             this.maxWidth = maxWidth;
         }
@@ -97,7 +98,7 @@ class Sheet {
             return previousColumns + value + nextColumns;
         }
 
-        Row addColumn(final Column column, final String value) {
+        protected Row addColumn(final Column column, final String value) {
             final boolean exists = columns.containsKey(column);
             if (!exists) {
                 throw new IllegalArgumentException("The column is not specified in the sheet.");
@@ -107,7 +108,7 @@ class Sheet {
             return this;
         }
 
-        void write(final PrintWriter writer) {
+        protected void write(final PrintWriter writer) {
             final List<String> rows = new ArrayList<>();
 
             for (Map.Entry<Column, String> entry : columns.entrySet()) {
@@ -154,35 +155,59 @@ class Sheet {
             this.width = width;
         }
 
-        String getDefaultValue() {
+        protected String getDefaultValue() {
             return defaultValue;
         }
 
-        int getPosition() {
+        protected int getPosition() {
             return position;
         }
 
-        int getWidth() {
+        protected int getWidth() {
             return width;
         }
 
-        private List<String> format(final String value) {
+        protected List<String> format(final String value) {
             final List<String> columns = new ArrayList<>();
 
+            final String[] words = value.split(" ");
+            final int maximumLength = width - padding;
+
             final StringBuilder buffer = new StringBuilder();
-            for (int length = value.length(), index = 0; index < length; index++) {
-                final int bufferLength = buffer.length();
+            final Iterator<String> iterator = List.of(words).iterator();
+            while (iterator.hasNext()) {
+                final String word = iterator.next();
+                buffer.append(word).append(' ');
 
-                final char c = value.charAt(index);
-                if (!((bufferLength == 0) && (c == ' '))) {
-                    buffer.append(c);
-                }
-
-                if ((bufferLength == (width - padding)) || (index == (length - 1))) {
-                    final String column = fillValue(buffer);
-
-                    columns.add(column);
+                if (((buffer.length() + 1) >= maximumLength) || !iterator.hasNext()) {
+                    final String column = buffer.toString();
+                    final String trimmedColumn = column.trim();
+                    columns.add(trimmedColumn);
                     buffer.setLength(0);
+                }
+            }
+
+            return format(columns);
+        }
+
+        private List<String> format(final List<String> value) {
+            final List<String> columns = new ArrayList<>();
+
+            for (String word : value) {
+                final StringBuilder buffer = new StringBuilder();
+                for (int length = word.length(), index = 0; index < length; index++) {
+                    final int bufferLength = buffer.length();
+
+                    final char c = word.charAt(index);
+                    if (!((bufferLength == 0) && (c == ' '))) {
+                        buffer.append(c);
+                    }
+
+                    if ((bufferLength == (width - padding)) || (index == (length - 1))) {
+                        final String column = fillValue(buffer);
+                        columns.add(column);
+                        buffer.setLength(0);
+                    }
                 }
             }
 

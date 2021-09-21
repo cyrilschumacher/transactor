@@ -41,7 +41,7 @@ class TransactorTest {
         Mockito.verify(stringWriterMock).write("Message Type Indicator  : 0x1100                                                ", 0, 80);
         Mockito.verify(stringWriterMock).write("Bitmap                  : 72 34 05 41 08 E0 90 00                               ", 0, 80);
 
-        Mockito.verify(stringWriterMock).write("002  Primary Account Number                .. .. .. .. .. .. .. .. .. .. .. .. .", 0, 80);
+        Mockito.verify(stringWriterMock).write("002  Primary Account Number                .. .. .. .. .. .. .. .. .. .. .. ..  ", 0, 80);
         Mockito.verify(stringWriterMock).write("003  Processing Code                       30 30 30 30 34 30                    ", 0, 80);
         Mockito.verify(stringWriterMock).write("004  Amount                                30 30 30 30 30 30 30 30 30 31 32 34  ", 0, 80);
         Mockito.verify(stringWriterMock).write("007  Transmission Date and Time            30 38 30 32 31 35 32 32 32 31        ", 0, 80);
@@ -54,8 +54,8 @@ class TransactorTest {
         Mockito.verify(stringWriterMock).write("032  Acquirer Institution Id Code          34 35 36 36 35 34 31 32 30 30 38 37  ", 0, 80);
         Mockito.verify(stringWriterMock).write("037  Retrieval Reference Number            30 39 39 39 32 30 37 30 30 36 31 39  ", 0, 80);
         Mockito.verify(stringWriterMock).write("041  Card Acceptor Terminal Identification 34 33 32 31 34 33 32 31              ", 0, 80);
-        Mockito.verify(stringWriterMock).write("042  Card Acceptor ID code                 34 35 35 34 39 30 30 35 31 35 35 36 3", 0, 80);
-        Mockito.verify(stringWriterMock).write("043  Card Acceptor Name/Location           .. .. .. .. .. .. .. .. .. .. .. .. .", 0, 80);
+        Mockito.verify(stringWriterMock).write("042  Card Acceptor ID code                 34 35 35 34 39 30 30 35 31 35 35 36  ", 0, 80);
+        Mockito.verify(stringWriterMock).write("043  Card Acceptor Name/Location           .. .. .. .. .. .. .. .. .. .. .. ..  ", 0, 80);
         Mockito.verify(stringWriterMock).write("049  Currency Code Transaction             39 37 38                             ", 0, 80);
         Mockito.verify(stringWriterMock).write("052  Personal Identification Data          .. .. .. .. .. .. .. ..              ", 0, 80);
     }
