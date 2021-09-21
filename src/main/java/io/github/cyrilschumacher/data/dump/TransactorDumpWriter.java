@@ -115,8 +115,8 @@ public class TransactorDumpWriter<T extends Enum<T> & DataElement> implements Du
         final Sheet.Column valueColumn = dataElementsSheet.createColumn((int) ((width / 100F) * 45F));
 
         for (MessageData.Element<T> element : messageData) {
-            T dataElement = element.getDataElement();
-            byte[] value = element.getValue();
+            final T dataElement = element.getDataElement();
+            final byte[] value = element.getValue();
 
             final int field = dataElement.getField();
 
@@ -145,7 +145,7 @@ public class TransactorDumpWriter<T extends Enum<T> & DataElement> implements Du
     }
 
     @Override
-    public void printMessageHeader(int messageTypeIndicator, Bitmap bitmap, Charset charset) throws IOException {
+    public void printMessageHeader(int messageTypeIndicator, Bitmap bitmap, Charset charset) {
         final String section = createSection("Message");
         writer.println(section);
         writer.println();
