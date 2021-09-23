@@ -4,7 +4,6 @@ import io.github.cyrilschumacher.Bitmap;
 import io.github.cyrilschumacher.MessageData;
 import io.github.cyrilschumacher.data.DataElement;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
@@ -12,7 +11,7 @@ import java.nio.charset.Charset;
 /**
  * Dump writer for {@link io.github.cyrilschumacher.Transactor}.
  * <p>
- * This class writes a dump to a given write as a constructor parameter: {@link #writer}.
+ * This class writes a dump to a given write as a constructor parameter: {@link #printWriter}.
  *
  * <ul>
  *     <li><b>Header</b>: print an ASCII separator indicating the start of the dump;</li>
@@ -33,7 +32,7 @@ public class TransactorDumpWriter<T extends Enum<T> & DataElement> implements Du
     private static final int DEFAULT_WIDTH = 80;
 
     private final int width;
-    private final PrintWriter writer;
+    private final PrintWriter printWriter;
 
     /**
      * Constructor.
@@ -55,7 +54,7 @@ public class TransactorDumpWriter<T extends Enum<T> & DataElement> implements Du
      */
     public TransactorDumpWriter(final Writer writer, final int width) {
         this.width = width;
-        this.writer = new PrintWriter(writer);
+        this.printWriter = new PrintWriter(writer);
     }
 
     private static String createBanner(final String title, final int width) {
@@ -99,14 +98,14 @@ public class TransactorDumpWriter<T extends Enum<T> & DataElement> implements Du
 
     @Override
     public void close() {
-        writer.close();
+        printWriter.close();
     }
 
     @Override
     public void printDataElements(final MessageData<T> messageData, final Charset charset) {
         final String section = createSection("Data Elements");
-        writer.println(section);
-        writer.println();
+        printWriter.println(section);
+        printWriter.println();
 
         final Sheet dataElementsSheet = new Sheet(width, PADDING);
 
@@ -127,28 +126,28 @@ public class TransactorDumpWriter<T extends Enum<T> & DataElement> implements Du
             dataElementsSheet.createRow().addColumn(fieldColumn, fieldString).addColumn(descriptionColumn, description).addColumn(valueColumn, valueString);
         }
 
-        dataElementsSheet.write(writer);
+        dataElementsSheet.write(printWriter);
     }
 
     @Override
     public void printFooter() {
         final String banner = createBanner("End ISO 8583 dump message", width);
-        writer.println();
-        writer.println(banner);
+        printWriter.println();
+        printWriter.println(banner);
     }
 
     @Override
     public void printHeader() {
         final String banner = createBanner("Start ISO 8583 dump message", width);
-        writer.println(banner);
-        writer.println();
+        printWriter.println(banner);
+        printWriter.println();
     }
 
     @Override
     public void printMessageHeader(int messageTypeIndicator, Bitmap bitmap, Charset charset) {
         final String section = createSection("Message");
-        writer.println(section);
-        writer.println();
+        printWriter.println(section);
+        printWriter.println();
 
         final String messageTypeIndicatorString = String.format("0x%04x", messageTypeIndicator);
         final String bitmapString = getBitmap(bitmap);
@@ -167,8 +166,8 @@ public class TransactorDumpWriter<T extends Enum<T> & DataElement> implements Du
         bitmapRow.addColumn(labelColumn, "Bitmap");
         bitmapRow.addColumn(valueColumn, bitmapString);
 
-        messageHeaderSheet.write(writer);
-        writer.println();
+        messageHeaderSheet.write(printWriter);
+        printWriter.println();
     }
 
 }
