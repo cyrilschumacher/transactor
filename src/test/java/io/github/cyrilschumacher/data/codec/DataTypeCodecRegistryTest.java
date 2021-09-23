@@ -45,7 +45,7 @@ class DataTypeCodecRegistryTest {
         var dataTypeCodecMock = Mockito.mock(DataTypeCodec.class);
 
         var dataTypeCodecRegistry = new DataTypeCodecRegistry();
-        dataTypeCodecRegistry.registry(Object.class, dataTypeCodecMock);
+        dataTypeCodecRegistry.register(Object.class, dataTypeCodecMock);
 
         // When
         var dataTypeCodec = dataTypeCodecRegistry.forClass(Object.class);

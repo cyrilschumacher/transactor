@@ -42,7 +42,7 @@ public class DataTypeCodecRegistry {
         this.dataTypeCodecs = new HashMap<>(dataTypeCodecMap);
     }
 
-    public DataTypeCodecRegistry registry(final Class<?> klass, final DataTypeCodec<?> dataTypeCodec) {
+    public DataTypeCodecRegistry register(final Class<?> klass, final DataTypeCodec<?> dataTypeCodec) {
         this.dataTypeCodecs.put(klass, dataTypeCodec);
         return this;
     }
