@@ -4,6 +4,22 @@ import java.time.*;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Registry for {@link DataTypeCodec}.
+ * <p>
+ * The registry provides, by default, a codec for each of the following classes:
+ * <ul>
+ *     <li>{@link ByteArrayDataTypeCodec} for <code>byte[]</code>;</li>
+ *     <li>{@link LocalDateDataTypeCodec} for {@link LocalDate};</li>
+ *     <li>{@link LocalDateTimeDataTypeCodec} for {@link LocalDateTime};</li>
+ *     <li>{@link LocalTimeDataTypeCodec} for {@link LocalTime};</li>
+ *     <li>{@link StringDataTypeCodec} for {@link String};</li>
+ *     <li>{@link YearMonthDataTypeCodec} for {@link YearMonth};</li>
+ *     <li>{@link ZonedDateTimeDataTypeCodec} for {@link ZonedDateTime};</li>
+ * </ul>
+ * <p>
+ * These codecs can be replaced with the method: {@link #register(Class, DataTypeCodec)}.
+ */
 public class DataTypeCodecRegistry {
 
     private final Map<Class<?>, DataTypeCodec<?>> dataTypeCodecs;
