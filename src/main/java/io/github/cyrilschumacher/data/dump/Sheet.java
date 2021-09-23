@@ -12,85 +12,83 @@ class Sheet {
     private static final String EMPTY_COLUMN_VALUE = "";
     private static final int INITIAL_POSITION = 0;
 
-    private final List<Column> columns;
-    private final int maxWidth;
+    private final List<ColumnDefinition> columnDefinitions;
+    private final int maximumRowLength;
     private final int padding;
     private final List<Row> rows;
 
-    Sheet(final int maximumWidth, final int padding) {
-        this.maxWidth = maximumWidth;
+    Sheet(final int maximumRowLength, final int padding) {
+        this.maximumRowLength = maximumRowLength;
         this.padding = padding;
         this.rows = new ArrayList<>();
-        this.columns = new ArrayList<>();
+        this.columnDefinitions = new ArrayList<>();
     }
 
-    Column createColumn() {
-        final int totalColumnsWidth = columns.stream().map(column -> column.width).reduce(0, Integer::sum);
-        final int width = maxWidth - totalColumnsWidth - padding;
+    ColumnDefinition createColumnDefinition() {
+        final int totalColumnsLength = columnDefinitions.stream().map(column -> column.maximumLength).reduce(0, Integer::sum);
+        final int length = maximumRowLength - totalColumnsLength - padding;
 
-        return createColumn(width);
+        return createColumnDefinition(length);
     }
 
-    Column createColumn(final int width) {
-        return createColumn(width, EMPTY_COLUMN_VALUE);
+    ColumnDefinition createColumnDefinition(final int maximumLength) {
+        return createColumnDefinition(maximumLength, EMPTY_COLUMN_VALUE);
     }
 
-    Column createColumn(final int width, final String defaultValue) {
-        assertColumnWidth(width);
+    ColumnDefinition createColumnDefinition(final int maximumLength, final String defaultValue) {
+        assertColumnLength(maximumLength);
 
-        final int size = columns.size();
-        final Column lastColumn = columns.isEmpty() ? null : columns.get(size - 1);
+        final int size = columnDefinitions.size();
+        final ColumnDefinition lastColumn = columnDefinitions.isEmpty() ? null : columnDefinitions.get(size - 1);
 
-        return createColumn(width, defaultValue, lastColumn);
+        return createColumnDefinition(maximumLength, defaultValue, lastColumn);
     }
 
     Row createRow() {
-        final Row row = new Row(columns, maxWidth);
+        final Row row = new Row(columnDefinitions, maximumRowLength);
         rows.add(row);
 
         return row;
     }
 
-    void write(final PrintWriter writer) {
-        for (Row row : rows) {
-            row.write(writer);
+    void write(final PrintWriter printWriter) {
+        rows.stream().map(Row::format).forEach(printWriter::println);
+    }
+
+    private void assertColumnLength(final int length) {
+        final int totalColumnsLength = columnDefinitions.stream().map(column -> column.maximumLength).reduce(0, Integer::sum);
+
+        final int columnLength = length + padding;
+        final int remainingLength = maximumRowLength - totalColumnsLength;
+        if (remainingLength < columnLength) {
+            throw new IllegalArgumentException("The length of the columns exceeds the maximum length (" + maximumRowLength + ").");
         }
     }
 
-    private void assertColumnWidth(final int width) {
-        final int totalColumnsWidth = columns.stream().map(column -> column.width).reduce(0, Integer::sum);
+    private ColumnDefinition createColumnDefinition(final int length, final String defaultValue, final ColumnDefinition previousColumn) {
+        final int position = previousColumn != null ? previousColumn.getPosition() + previousColumn.getMaximumLength() : INITIAL_POSITION;
+        final int maximumLength = length + padding;
 
-        final int widthWithPadding = width + padding;
-        final int remainingWidth = maxWidth - totalColumnsWidth;
-        if (remainingWidth < widthWithPadding) {
-            throw new IllegalArgumentException("The length of the columns exceeds the maximum length (" + maxWidth + ").");
-        }
-    }
+        final ColumnDefinition columnDefinition = new ColumnDefinition(maximumLength, position, padding, defaultValue);
+        columnDefinitions.add(columnDefinition);
 
-    private Column createColumn(final int width, final String defaultValue, final Column previousColumn) {
-        final int position = previousColumn != null ? previousColumn.getPosition() + previousColumn.getWidth() : INITIAL_POSITION;
-        final int columnWidth = width + padding;
-
-        final Column columnModel = new Column(columnWidth, position, padding, defaultValue);
-        columns.add(columnModel);
-
-        return columnModel;
+        return columnDefinition;
     }
 
     protected static class Row {
 
-        private final Map<Column, String> columns;
-        private final int maxWidth;
+        private final Map<ColumnDefinition, String> columns;
+        private final int maximumRowLength;
 
-        protected Row(final List<Column> columns, final int maxWidth) {
-            this.columns = columns.stream().collect(Collectors.toMap(column -> column, Column::getDefaultValue));
-            this.maxWidth = maxWidth;
+        protected Row(final List<ColumnDefinition> columnDefinitions, final int maximumRowLength) {
+            this.columns = columnDefinitions.stream().collect(Collectors.toMap(column -> column, ColumnDefinition::getDefaultValue));
+            this.maximumRowLength = maximumRowLength;
         }
 
-        private static String appendColumn(final Column column, final String row, final String value) {
-            final int width = column.getWidth();
-            final int startIndex = column.getPosition();
-            final int endIndex = startIndex + width;
+        private static String appendColumn(final ColumnDefinition columnDefinition, final String row, final String value) {
+            final int maximumLength = columnDefinition.getMaximumLength();
+            final int startIndex = columnDefinition.getPosition();
+            final int endIndex = startIndex + maximumLength;
 
             final String previousColumns = row.substring(0, startIndex);
             final String nextColumns = row.substring(endIndex);
@@ -98,61 +96,60 @@ class Sheet {
             return previousColumns + value + nextColumns;
         }
 
-        protected Row addColumn(final Column column, final String value) {
-            final boolean exists = columns.containsKey(column);
+        protected Row addColumn(final ColumnDefinition columnDefinition, final String value) {
+            final boolean exists = columns.containsKey(columnDefinition);
             if (!exists) {
                 throw new IllegalArgumentException("The column is not specified in the sheet.");
             }
 
-            columns.replace(column, value);
+            columns.replace(columnDefinition, value);
             return this;
         }
 
-        protected void write(final PrintWriter writer) {
+        protected List<String> format() {
             final List<String> rows = new ArrayList<>();
 
-            for (Map.Entry<Column, String> entry : columns.entrySet()) {
-                final Column column = entry.getKey();
-                final String initialValue = entry.getValue();
+            for (Map.Entry<ColumnDefinition, String> entry : columns.entrySet()) {
+                final ColumnDefinition columnDefinition = entry.getKey();
+                final String columnValue = entry.getValue();
 
-                final List<String> columns = column.format(initialValue);
-                for (int size = columns.size(), index = 0; index < size; index++) {
-                    final int columnsSize = columns.size();
+                final List<String> formattedColumns = columnDefinition.format(columnValue);
+                for (int size = formattedColumns.size(), index = 0; index < size; index++) {
+                    final int columnsSize = formattedColumns.size();
                     final int rowsSize = rows.size();
-
                     if (columnsSize > rowsSize) {
-                        final String row = " ".repeat(maxWidth);
+                        final String row = " ".repeat(maximumRowLength);
                         rows.add(row);
                     }
 
-                    final String value = columns.get(index);
+                    final String formattedColumn = formattedColumns.get(index);
 
-                    String row = rows.get(index);
-                    row = appendColumn(column, row, value);
+                    final String oldRow = rows.get(index);
+                    final String newRow = appendColumn(columnDefinition, oldRow, formattedColumn);
 
-                    rows.set(index, row);
+                    rows.set(index, newRow);
                 }
             }
 
-            for (String row : rows) {
-                writer.println(row);
-            }
+            return List.copyOf(rows);
         }
 
     }
 
-    protected static class Column {
+    protected static class ColumnDefinition {
+
+        private static final String WORD_SEPARATOR = " ";
 
         private final String defaultValue;
         private final int padding;
         private final int position;
-        private final int width;
+        private final int maximumLength;
 
-        private Column(final int width, final int position, final int padding, final String defaultValue) {
+        private ColumnDefinition(final int maximumLength, final int position, final int padding, final String defaultValue) {
             this.defaultValue = defaultValue;
             this.padding = padding;
             this.position = position;
-            this.width = width;
+            this.maximumLength = maximumLength;
         }
 
         protected String getDefaultValue() {
@@ -163,21 +160,27 @@ class Sheet {
             return position;
         }
 
-        protected int getWidth() {
-            return width;
+        protected int getMaximumLength() {
+            return maximumLength;
+        }
+
+        private static Iterator<String> createWords(final String value) {
+            final String[] words = value.split(WORD_SEPARATOR);
+            final List<String> wordList = List.of(words);
+
+            return wordList.iterator();
         }
 
         protected List<String> format(final String value) {
             final List<String> columns = new ArrayList<>();
-
-            final String[] words = value.split(" ");
-            final int maximumLength = width - padding;
-
             final StringBuilder buffer = new StringBuilder();
-            final Iterator<String> iterator = List.of(words).iterator();
+
+            final int maximumLength = this.maximumLength - padding;
+
+            final Iterator<String> iterator = createWords(value);
             while (iterator.hasNext()) {
                 final String word = iterator.next();
-                buffer.append(word).append(' ');
+                buffer.append(word).append(WORD_SEPARATOR);
 
                 if (((buffer.length() + 1) >= maximumLength) || !iterator.hasNext()) {
                     final String column = buffer.toString();
@@ -203,7 +206,7 @@ class Sheet {
                         buffer.append(c);
                     }
 
-                    if ((bufferLength == (width - padding)) || (index == (length - 1))) {
+                    if ((bufferLength == (maximumLength - padding)) || (index == (length - 1))) {
                         final String column = fillValue(buffer);
                         columns.add(column);
                         buffer.setLength(0);
@@ -221,7 +224,7 @@ class Sheet {
 
         private String fillValue(final String value) {
             final int length = value.length();
-            final int remainingSpaces = width - length;
+            final int remainingSpaces = maximumLength - length;
 
             final String missingSpaces = " ".repeat(remainingSpaces);
             return value + missingSpaces;

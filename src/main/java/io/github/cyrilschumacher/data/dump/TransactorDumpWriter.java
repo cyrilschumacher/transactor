@@ -29,38 +29,38 @@ public class TransactorDumpWriter<T extends Enum<T> & DataElement> implements Du
 
     private static final String BORDER = "*";
     private static final int PADDING = 1;
-    private static final int DEFAULT_WIDTH = 80;
+    private static final int DEFAULT_MAXIMUM_ROW_LENGTH = 80;
 
-    private final int width;
+    private final int maximumRowLength;
     private final PrintWriter printWriter;
 
     /**
      * Constructor.
      * <p>
-     * Constructs a dump with lines not exceeding the constant: {@link #DEFAULT_WIDTH}.
+     * Constructs a dump with lines not exceeding the constant: {@link #DEFAULT_MAXIMUM_ROW_LENGTH}.
      *
      * @param writer the writer used to write the dump.
      * @see #TransactorDumpWriter(Writer, int)
      */
     public TransactorDumpWriter(final Writer writer) {
-        this(writer, DEFAULT_WIDTH);
+        this(writer, DEFAULT_MAXIMUM_ROW_LENGTH);
     }
 
     /**
      * Constructor.
      *
      * @param writer the writer used to write the dump.
-     * @param width  the total number of characters on each line.
+     * @param maximumRowLength  the total number of characters on each line.
      */
-    public TransactorDumpWriter(final Writer writer, final int width) {
-        this.width = width;
+    public TransactorDumpWriter(final Writer writer, final int maximumRowLength) {
+        this.maximumRowLength = maximumRowLength;
         this.printWriter = new PrintWriter(writer);
     }
 
-    private static String createBanner(final String title, final int width) {
+    private static String createBanner(final String title, final int maximumRowLength) {
         final int length = title.length();
 
-        final double missingCharacters = width - length - 2;
+        final double missingCharacters = maximumRowLength - length - 2;
         final int missingSeparatorLeft = (int) Math.floor(missingCharacters / 2.0);
         final int missingSeparatorRight = (int) Math.ceil(missingCharacters / 2.0);
 
@@ -107,11 +107,11 @@ public class TransactorDumpWriter<T extends Enum<T> & DataElement> implements Du
         printWriter.println(section);
         printWriter.println();
 
-        final Sheet dataElementsSheet = new Sheet(width, PADDING);
+        final Sheet dataElementsSheet = new Sheet(maximumRowLength, PADDING);
 
-        final Sheet.Column fieldColumn = dataElementsSheet.createColumn((int) ((width / 100F) * 5F));
-        final Sheet.Column descriptionColumn = dataElementsSheet.createColumn((int) ((width / 100F) * 47F));
-        final Sheet.Column valueColumn = dataElementsSheet.createColumn((int) ((width / 100F) * 45F));
+        final Sheet.ColumnDefinition fieldColumn = dataElementsSheet.createColumnDefinition((int) ((maximumRowLength / 100F) * 5F));
+        final Sheet.ColumnDefinition descriptionColumn = dataElementsSheet.createColumnDefinition((int) ((maximumRowLength / 100F) * 47F));
+        final Sheet.ColumnDefinition valueColumn = dataElementsSheet.createColumnDefinition((int) ((maximumRowLength / 100F) * 45F));
 
         for (MessageData.Element<T> element : messageData) {
             final T dataElement = element.getDataElement();
@@ -131,14 +131,14 @@ public class TransactorDumpWriter<T extends Enum<T> & DataElement> implements Du
 
     @Override
     public void printFooter() {
-        final String banner = createBanner("End ISO 8583 dump message", width);
+        final String banner = createBanner("End ISO 8583 dump message", maximumRowLength);
         printWriter.println();
         printWriter.println(banner);
     }
 
     @Override
     public void printHeader() {
-        final String banner = createBanner("Start ISO 8583 dump message", width);
+        final String banner = createBanner("Start ISO 8583 dump message", maximumRowLength);
         printWriter.println(banner);
         printWriter.println();
     }
@@ -152,11 +152,11 @@ public class TransactorDumpWriter<T extends Enum<T> & DataElement> implements Du
         final String messageTypeIndicatorString = String.format("0x%04x", messageTypeIndicator);
         final String bitmapString = getBitmap(bitmap);
 
-        final Sheet messageHeaderSheet = new Sheet(width, PADDING);
+        final Sheet messageHeaderSheet = new Sheet(maximumRowLength, PADDING);
 
-        final Sheet.Column labelColumn = messageHeaderSheet.createColumn(23);
-        messageHeaderSheet.createColumn(1, ":");
-        final Sheet.Column valueColumn = messageHeaderSheet.createColumn();
+        final Sheet.ColumnDefinition labelColumn = messageHeaderSheet.createColumnDefinition(23);
+        messageHeaderSheet.createColumnDefinition(1, ":");
+        final Sheet.ColumnDefinition valueColumn = messageHeaderSheet.createColumnDefinition();
 
         final Sheet.Row messageTypeIndicatorRow = messageHeaderSheet.createRow();
         messageTypeIndicatorRow.addColumn(labelColumn, "Message Type Indicator");
