@@ -52,7 +52,7 @@ class Sheet {
     }
 
     void write(final PrintWriter printWriter) {
-        rows.stream().map(Row::format).forEach(printWriter::println);
+        rows.stream().map(Row::format).flatMap(List::stream).forEach(printWriter::println);
     }
 
     private void assertColumnLength(final int length) {
