@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 /**
  * Data type codec for the type: {@link LocalDateTime}.
  * <p>
- * The codec handles the {@link LocalDate} type with the following format: <code>yyMMddHHmmss</code>.
+ * The codec handles the {@link LocalDateTime} type with the following format: <code>yyMMddHHmmss</code>.
  */
 public final class LocalDateTimeDataTypeCodec implements DataTypeCodec<LocalDateTime> {
 
