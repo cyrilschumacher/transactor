@@ -1,6 +1,5 @@
 package io.github.cyrilschumacher.data.codec;
 
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -26,7 +25,7 @@ public final class LocalDateDataTypeCodec implements DataTypeCodec<LocalDate> {
 
     @Override
     public LocalDate decode(final byte[] value, final Charset charset) {
-        final ByteBuffer buffer = ByteBuffer.wrap(value);
+        final WordByteBuffer buffer = new WordByteBuffer(value);
         return decode(buffer, charset);
     }
 
@@ -36,11 +35,9 @@ public final class LocalDateDataTypeCodec implements DataTypeCodec<LocalDate> {
         return formattedValue.getBytes(charset);
     }
 
-    private LocalDate decode(final ByteBuffer buffer, final Charset charset) {
-        final byte[] month = new byte[2];
-        final byte[] dayOfMonth = new byte[2];
-        buffer.get(month);
-        buffer.get(dayOfMonth);
+    private LocalDate decode(final WordByteBuffer buffer, final Charset charset) {
+        final byte[] month = buffer.getWord();
+        final byte[] dayOfMonth = buffer.getWord();
 
         return decode(month, dayOfMonth, charset);
     }

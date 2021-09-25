@@ -1,6 +1,5 @@
 package io.github.cyrilschumacher.data.codec;
 
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,7 +16,7 @@ public final class LocalTimeDataTypeCodec implements DataTypeCodec<LocalTime> {
 
     @Override
     public LocalTime decode(final byte[] value, final Charset charset) {
-        final ByteBuffer buffer = ByteBuffer.wrap(value);
+        final WordByteBuffer buffer = new WordByteBuffer(value);
         return decode(buffer, charset);
     }
 
@@ -27,13 +26,10 @@ public final class LocalTimeDataTypeCodec implements DataTypeCodec<LocalTime> {
         return formattedValue.getBytes(charset);
     }
 
-    private LocalTime decode(final ByteBuffer buffer, final Charset charset) {
-        final byte[] hour = new byte[2];
-        final byte[] minute = new byte[2];
-        final byte[] second = new byte[2];
-        buffer.get(hour);
-        buffer.get(minute);
-        buffer.get(second);
+    private LocalTime decode(final WordByteBuffer buffer, final Charset charset) {
+        final byte[] hour = buffer.getWord();
+        final byte[] minute = buffer.getWord();
+        final byte[] second = buffer.getWord();
 
         return decode(hour, minute, second, charset);
     }

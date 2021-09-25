@@ -1,6 +1,5 @@
 package io.github.cyrilschumacher.data.codec;
 
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -56,7 +55,7 @@ public final class ZonedDateTimeDataTypeCodec implements DataTypeCodec<ZonedDate
 
     @Override
     public ZonedDateTime decode(final byte[] value, final Charset charset) {
-        final ByteBuffer buffer = ByteBuffer.wrap(value);
+        final WordByteBuffer buffer = new WordByteBuffer(value);
         return decode(buffer, charset);
     }
 
@@ -66,19 +65,13 @@ public final class ZonedDateTimeDataTypeCodec implements DataTypeCodec<ZonedDate
         return formattedValue.getBytes(charset);
     }
 
-    private ZonedDateTime decode(final ByteBuffer buffer, final Charset charset) {
-        final byte[] year = new byte[2];
-        final byte[] month = new byte[2];
-        final byte[] dayOfMonth = new byte[2];
-        final byte[] hour = new byte[2];
-        final byte[] minute = new byte[2];
-        final byte[] second = new byte[2];
-        buffer.get(year);
-        buffer.get(month);
-        buffer.get(dayOfMonth);
-        buffer.get(hour);
-        buffer.get(minute);
-        buffer.get(second);
+    private ZonedDateTime decode(final WordByteBuffer buffer, final Charset charset) {
+        final byte[] year = buffer.getWord();
+        final byte[] month = buffer.getWord();
+        final byte[] dayOfMonth = buffer.getWord();
+        final byte[] hour = buffer.getWord();
+        final byte[] minute = buffer.getWord();
+        final byte[] second = buffer.getWord();
 
         return decode(year, month, dayOfMonth, hour, minute, second, charset);
     }
