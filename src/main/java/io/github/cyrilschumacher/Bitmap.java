@@ -10,7 +10,9 @@ import java.util.stream.IntStream;
 
 public class Bitmap {
 
+    private static final int BINARY_BIT_LENGTH = 8;
     private static final int BITMAP_LENGTH = 16;
+    private static final int HEXADECIMAL_BIT_LENGTH = 4;
     private static final int HEXADECIMAL_RADIX = 16;
     private static final int MAXIMUM_BINARY_RANGE = 4;
     private static final int MAXIMUM_DATA_ELEMENTS_PER_BITMAP = 64;
@@ -30,8 +32,8 @@ public class Bitmap {
     static Bitmap parse(final byte[] data) {
         final Set<Integer> dataFields = new HashSet<>();
         for (int index = 0; index < data.length; index++) {
-            final byte bytePart = data[index];
-            final Set<Integer> dataFieldsToAdd = parse(index * 2, bytePart, 8);
+            final byte bits = data[index];
+            final Set<Integer> dataFieldsToAdd = parse(index * 2, bits, BINARY_BIT_LENGTH);
 
             dataFields.addAll(dataFieldsToAdd);
         }
@@ -43,10 +45,10 @@ public class Bitmap {
     static Bitmap parse(final String data) {
         final Set<Integer> dataFields = new HashSet<>();
 
-        for (int dataPartIndex = 0; dataPartIndex < data.length(); dataPartIndex++) {
-            final char hexBytePart = data.charAt(dataPartIndex);
-            final byte bytePart = (byte) Character.digit(hexBytePart, HEXADECIMAL_RADIX);
-            final Set<Integer> dataFieldsToAdd = parse(dataPartIndex, bytePart, 4);
+        for (int length = data.length(), index = 0; index < length; index++) {
+            final char hexBits = data.charAt(index);
+            final byte bits = (byte) Character.digit(hexBits, HEXADECIMAL_RADIX);
+            final Set<Integer> dataFieldsToAdd = parse(index, bits, HEXADECIMAL_BIT_LENGTH);
 
             dataFields.addAll(dataFieldsToAdd);
         }
@@ -70,22 +72,22 @@ public class Bitmap {
         return (int) Math.ceil(range);
     }
 
-    private static boolean isBitSet(final int bitPosition, final int bytePart) {
-        final int initialBits = (int) Math.pow(2, bitPosition);
-        return (bytePart & initialBits) == initialBits;
+    private static boolean isBitSet(final int bitIndex, final int bits) {
+        final int initialBits = (int) Math.pow(2, bitIndex);
+        return (bits & initialBits) == initialBits;
     }
 
-    private static Set<Integer> parse(final int dataPartIndex, final byte bytePart, final int maximumBitNumber) {
-        return IntStream.range(0, maximumBitNumber)
+    private static Set<Integer> parse(final int startIndex, final byte bits, final int bitLength) {
+        return IntStream.range(0, bitLength)
                 .boxed()
-                .filter(bitIndex -> isBitSet(bitIndex, bytePart))
-                .map(bitIndex -> toField(bitIndex, dataPartIndex, maximumBitNumber))
+                .filter(bitIndex -> isBitSet(bitIndex, bits))
+                .map(bitIndex -> getDataField(bitIndex, startIndex, bitLength))
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    private static int toField(final int bitIndex, final int dataPartIndex, final int maximumBitNumber) {
-        final int position = (maximumBitNumber - bitIndex);
-        return (dataPartIndex * 4) + position;
+    private static int getDataField(final int bitIndex, final int index, final int bitLength) {
+        final int position = (bitLength - bitIndex);
+        return (index * 4) + position;
     }
 
     public Set<Integer> getDataFields() {
